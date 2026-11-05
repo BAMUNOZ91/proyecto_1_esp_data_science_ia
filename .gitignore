@@ -1,6 +1,15 @@
-﻿data/raw/
-data/*.csv
-.ipynb_checkpoints/
+﻿# Datos: no se versionan. Se descargan y generan con `make data`.
+data/
+
+# Modelos entrenados (se generan con `make train`)
+models/*.joblib
+
+# Entorno y caches
 .venv/
 __pycache__/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Secretos
 .env

@@ -1,0 +1,30 @@
+# Integración continua: en cada push a main y en cada Pull Request
+# instala el proyecto con uv, revisa el estilo y corre las pruebas.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar el código
+        uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Instalar dependencias (usa la versión de Python de .python-version)
+        run: uv sync --locked
+
+      - name: Lint (ruff)
+        run: uv run ruff check src tests
+
+      - name: Tests (pytest)
+        run: uv run pytest
