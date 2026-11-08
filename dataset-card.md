@@ -23,7 +23,7 @@ Los datos no se versionan en git. Se esperan en estas rutas:
 - `data/raw/geih_2025_ocupados_crudo.csv`
 - `data/processed/geih_2025_ocupados_limpio.csv`
 
-**Pendiente:** `make data` todavía no genera estos archivos, porque faltan `descargar()` y `limpiar()` en `src/cotiza_pension/data.py`.
+`make data` usa el archivo crudo si ya existe; si no, lo descarga. Después genera el archivo limpio.
 
 ## Licencia y cita
 

@@ -8,6 +8,8 @@ Ejecutable desde la terminal (descarga, limpia y guarda en data/processed/):
 import pandas as pd
 
 from .config import (
+    ANIO,
+    CODIGOS,
     COLUMNA_MES,
     FEATURE_CONTRATO,
     FEATURES_CAT,
@@ -15,18 +17,39 @@ from .config import (
     MESES_ENTRENAMIENTO,
     MESES_PRUEBA,
     PROCESSED_PATH,
+    RAW_DIR,
     RAW_PATH,
+    RENOMBRAR,
+    SMMLV,
     TARGET,
+    VARIABLES_DANE,
 )
 
 
 def descargar() -> pd.DataFrame:
     """Descarga la GEIH 2025 con `dane_data`, deja solo ocupados y guarda RAW_PATH.
 
-    Devuelve el DataFrame crudo (códigos originales del DANE, VARIABLES_DANE).
+    Devuelve el DataFrame crudo (códigos originales del DANE, VARIABLES_DANE). Se detiene
+    si falta un mes o una variable, para no generar un dataset incompleto sin avisar.
     """
-    # TODO (paso 3): migrar desde notebooks/generacion_dataset_DANE_geih.ipynb
-    raise NotImplementedError("Pendiente: migrar desde generacion_dataset_DANE_geih.ipynb")
+    import dane_data as dd  # se importa aquí porque solo hace falta al descargar
+
+    RAW_PATH.parent.mkdir(parents=True, exist_ok=True)
+    dd.set_paths(geih=str(RAW_DIR / "geih"))
+
+    fallidos = dd.geih.download(ANIO)
+    if fallidos:
+        raise RuntimeError(f"No se pudo descargar: {fallidos}")
+
+    df = dd.geih.load(ANIO, months=None, columns=VARIABLES_DANE, harmonize_vars=False)
+    columnas = ["anio", "mes", *VARIABLES_DANE]
+    faltan = [c for c in columnas if c not in df.columns]
+    if faltan:
+        raise RuntimeError(f"No vinieron estas variables: {faltan}")
+
+    df = df.loc[df["OCI"] == 1, columnas]  # solo ocupados
+    df.to_csv(RAW_PATH, index=False, encoding="utf-8")
+    return df
 
 
 def limpiar(df_crudo: pd.DataFrame) -> pd.DataFrame:
@@ -36,8 +59,20 @@ def limpiar(df_crudo: pd.DataFrame) -> pd.DataFrame:
     objetivo en 1/0, traduce códigos a texto y calcula `ingreso_smmlv` y
     `gana_1_smmlv_o_mas`.
     """
-    # TODO (paso 3): migrar desde notebooks/01_preparacion_eda.ipynb, sección 4
-    raise NotImplementedError("Pendiente: migrar desde 01_preparacion_eda.ipynb, sección 4")
+    df = df_crudo.drop(columns=["MES", "OCI"])
+    df.columns = df.columns.str.lower()
+    df = df.rename(columns=RENOMBRAR)
+
+    df = df[df[TARGET] != 3].copy()
+    df[TARGET] = df[TARGET].map({1: 1, 2: 0})
+
+    for columna, codigos in CODIGOS.items():
+        df[columna] = df[columna].map(codigos)
+    df["parentesco_jefe"] = df["parentesco_jefe"].fillna("Otro")
+
+    df["ingreso_smmlv"] = df["ingreso"] / SMMLV
+    df["gana_1_smmlv_o_mas"] = (df["ingreso_smmlv"] >= 1).astype(float).where(df["ingreso"].notna())
+    return df
 
 
 def cargar() -> pd.DataFrame:
