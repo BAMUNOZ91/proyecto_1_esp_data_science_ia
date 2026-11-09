@@ -160,7 +160,8 @@ FEATURES_CAT = [
     "rama_2d",
     "estrato",
 ]
-# Se prueba con y sin ella: en los datos equivale casi a "es asalariado" (EDA, sección 8.4)
+# Opcional: en los datos equivale casi a "es asalariado" (EDA, sección 8.4) y no mejoró
+# ningún modelo (notebook 02). El modelo final no la usa: ver USAR_CONTRATO.
 FEATURE_CONTRATO = "tiene_contrato"
 
 # Nunca entran al modelo: identificadores, constantes, diseño muestral o derivadas del ingreso
@@ -176,3 +177,22 @@ MESES_PRUEBA = [10, 11, 12]  # octubre a diciembre
 
 # --- Modelado ----------------------------------------------------------------
 SEMILLA = 42
+
+# Modelo final elegido en notebooks/02_seleccion_modelos.ipynb: mejor AUC (0,9829) y Brier
+# (0,0477) en la validación temporal por meses. HistGradientBoosting quedó casi empatado.
+MODELO_FINAL = "xgboost"
+USAR_CONTRATO = False
+
+# Mejor combinación de RandomizedSearchCV (20 combinaciones, random_state=42, cv por meses)
+HIPERPARAMETROS_FINALES = {
+    "n_estimators": 755,
+    "learning_rate": 0.026613431317616388,
+    "max_depth": 6,
+    "min_child_weight": 23.196088229293604,
+    "subsample": 0.9533121035675474,
+    "colsample_bytree": 0.7182534743350856,
+    "reg_lambda": 0.6808005465661973,
+}
+
+# Probabilidad a partir de la cual se predice "cotiza"
+UMBRAL = 0.5

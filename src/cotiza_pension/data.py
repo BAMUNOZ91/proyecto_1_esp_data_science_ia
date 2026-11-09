@@ -22,6 +22,7 @@ from .config import (
     RENOMBRAR,
     SMMLV,
     TARGET,
+    USAR_CONTRATO,
     VARIABLES_DANE,
 )
 
@@ -95,8 +96,13 @@ def separar_temporal(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     return entrenamiento, prueba
 
 
-def separar_X_y(df: pd.DataFrame, usar_contrato: bool = True) -> tuple[pd.DataFrame, pd.Series]:
-    """Separa features (X) y objetivo (y). Solo deja las columnas declaradas en config."""
+def separar_X_y(
+    df: pd.DataFrame, usar_contrato: bool = USAR_CONTRATO
+) -> tuple[pd.DataFrame, pd.Series]:
+    """Separa features (X) y objetivo (y). Solo deja las columnas declaradas en config.
+
+    Por defecto sigue la decisión del modelo final (config.USAR_CONTRATO).
+    """
     columnas = FEATURES_NUM + FEATURES_CAT + ([FEATURE_CONTRATO] if usar_contrato else [])
     return df[columnas].copy(), df[TARGET].copy()
 
