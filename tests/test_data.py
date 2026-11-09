@@ -14,6 +14,7 @@ from cotiza_pension.config import (
     RENOMBRAR,
     SMMLV,
     TARGET,
+    USAR_CONTRATO,
     VARIABLES_DANE,
 )
 from cotiza_pension.data import descargar, limpiar, separar_temporal, separar_X_y
@@ -108,7 +109,7 @@ def test_split_temporal_no_repite_filas(df_sintetico):
 
 
 def test_separar_X_y_deja_solo_las_features(df_sintetico):
-    X, y = separar_X_y(df_sintetico)
+    X, y = separar_X_y(df_sintetico, usar_contrato=True)
     assert list(X.columns) == FEATURES_NUM + FEATURES_CAT + [FEATURE_CONTRATO]
     assert y.name == TARGET
     assert "mes" not in X.columns and "factor_expansion" not in X.columns
@@ -117,3 +118,8 @@ def test_separar_X_y_deja_solo_las_features(df_sintetico):
 def test_separar_X_y_sin_contrato(df_sintetico):
     X, _ = separar_X_y(df_sintetico, usar_contrato=False)
     assert FEATURE_CONTRATO not in X.columns
+
+
+def test_separar_X_y_sigue_la_decision_del_modelo_final(df_sintetico):
+    X, _ = separar_X_y(df_sintetico)
+    assert (FEATURE_CONTRATO in X.columns) == USAR_CONTRATO
