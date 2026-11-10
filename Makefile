@@ -16,7 +16,7 @@ setup:  ## Crea el entorno .venv e instala las dependencias (incluye las de desa
 data:  ## Descarga la GEIH 2025 del DANE y genera data/processed/ (la primera vez tarda).
 	uv run python -m cotiza_pension.data
 
-train:  ## Entrena el modelo y lo guarda en models/.
+train:  ## Entrena el modelo final, lo evalúa en prueba y guarda models/ y reports/metricas_prueba.json.
 	uv run python -m cotiza_pension.train
 
 test:  ## Corre las pruebas automatizadas.

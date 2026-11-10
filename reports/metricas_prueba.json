@@ -1,0 +1,68 @@
+{
+  "modelo": "xgboost",
+  "usar_contrato": false,
+  "hiperparametros": {
+    "n_estimators": 755,
+    "learning_rate": 0.0266,
+    "max_depth": 6,
+    "min_child_weight": 23.1961,
+    "subsample": 0.9533,
+    "colsample_bytree": 0.7183,
+    "reg_lambda": 0.6808
+  },
+  "umbral": 0.5,
+  "datos": {
+    "filas_entrenamiento": 261988,
+    "filas_prueba": 89733,
+    "meses_entrenamiento": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "meses_prueba": [
+      10,
+      11,
+      12
+    ]
+  },
+  "prueba": {
+    "general": {
+      "personas": 89733,
+      "roc_auc": 0.9819,
+      "pr_auc": 0.9786,
+      "brier": 0.049,
+      "acierto": 0.9337,
+      "no_cotizantes_detectados": 0.9476
+    },
+    "matriz_confusion": {
+      "no_cotiza_predicho_no_cotiza": 48710,
+      "no_cotiza_predicho_cotiza": 2692,
+      "cotiza_predicho_no_cotiza": 3256,
+      "cotiza_predicho_cotiza": 35075
+    },
+    "roc_auc_por_mes": {
+      "10": 0.9823,
+      "11": 0.9816,
+      "12": 0.9818
+    },
+    "gana_1_smmlv_o_mas": {
+      "personas": 48186,
+      "roc_auc": 0.9644,
+      "pr_auc": 0.9865,
+      "brier": 0.0657,
+      "acierto": 0.9085,
+      "no_cotizantes_detectados": 0.8252
+    }
+  },
+  "versiones": {
+    "scikit-learn": "1.9.1",
+    "xgboost-cpu": "3.4.1",
+    "pandas": "3.1.1"
+  }
+}

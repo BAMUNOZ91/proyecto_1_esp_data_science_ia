@@ -3,7 +3,7 @@
 import joblib
 import pandas as pd
 
-from .config import FEATURE_CONTRATO, FEATURES_CAT, FEATURES_NUM, MODEL_PATH
+from .config import FEATURE_CONTRATO, FEATURES_CAT, FEATURES_NUM, MODEL_PATH, UMBRAL
 
 _pipeline = None
 
@@ -26,7 +26,8 @@ def predecir(datos: dict) -> dict:
     Entrada: dict con todas las FEATURES_NUM y FEATURES_CAT (y `tiene_contrato` si el
     modelo la usa), por ejemplo {"edad": 35, "sexo": "Mujer", ...}.
 
-    Salida: {"cotiza": 1, "probabilidad_cotizar": 0.73}
+    Salida: {"cotiza": 1, "probabilidad_cotizar": 0.73}. `cotiza` es 1 si la probabilidad
+    llega a config.UMBRAL.
     """
     requeridas = FEATURES_NUM + FEATURES_CAT
     faltantes = [c for c in requeridas if c not in datos]
@@ -40,4 +41,4 @@ def predecir(datos: dict) -> dict:
 
     df = pd.DataFrame([datos], columns=columnas)
     probabilidad = float(pipeline.predict_proba(df)[0, 1])
-    return {"cotiza": int(probabilidad >= 0.5), "probabilidad_cotizar": probabilidad}
+    return {"cotiza": int(probabilidad >= UMBRAL), "probabilidad_cotizar": probabilidad}
