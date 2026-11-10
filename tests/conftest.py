@@ -1,10 +1,10 @@
-"""Datos sintéticos para los tests de features y modelos (no requieren descargar nada)."""
+"""Datos sintéticos para los tests de features, modelos y entrenamiento (sin descargar nada)."""
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from cotiza_pension.config import FEATURE_CONTRATO, FEATURES_CAT, FEATURES_NUM
+from cotiza_pension.config import FEATURE_CONTRATO, FEATURES_CAT, FEATURES_NUM, TARGET
 
 # Algunas categóricas vienen como códigos numéricos en los datos reales (con nulos)
 CODIGOS_NUMERICOS = {
@@ -14,15 +14,13 @@ CODIGOS_NUMERICOS = {
 }
 
 
-@pytest.fixture
-def X_y_sinteticos() -> tuple[pd.DataFrame, pd.Series]:
-    """240 personas con las mismas columnas y tipos que el dataset limpio.
+def generar_sinteticos(n: int, semilla: int = 0) -> tuple[pd.DataFrame, pd.Series]:
+    """`n` personas con las mismas columnas y tipos que el dataset limpio.
 
     Cotiza quien gana más de 1 SMMLV o es empleado del gobierno, para que haya una
     relación clara entre las features y el objetivo.
     """
-    rng = np.random.default_rng(0)
-    n = 240
+    rng = np.random.default_rng(semilla)
     X = pd.DataFrame(
         {
             "edad": rng.integers(18, 70, n),
@@ -42,4 +40,16 @@ def X_y_sinteticos() -> tuple[pd.DataFrame, pd.Series]:
         (X["ingreso_smmlv"].fillna(0) > 1) | (X["posicion_ocupacional"] == "Empleado del gobierno")
     ).astype(int)
     assert list(X.columns) == FEATURES_NUM + FEATURES_CAT + [FEATURE_CONTRATO]
-    return X, y.rename("cotiza_pension")
+    return X, y.rename(TARGET)
+
+
+@pytest.fixture
+def X_y_sinteticos() -> tuple[pd.DataFrame, pd.Series]:
+    """240 personas: suficiente para probar features y el catálogo de modelos."""
+    return generar_sinteticos(240)
+
+
+@pytest.fixture
+def generador_sinteticos():
+    """La función generadora, para tests que necesitan otro tamaño de datos."""
+    return generar_sinteticos
