@@ -11,10 +11,13 @@ DATA_DIR = PROJECT_DIR / "data"
 RAW_DIR = DATA_DIR / "raw"
 PROCESSED_DIR = DATA_DIR / "processed"
 MODELS_DIR = PROJECT_DIR / "models"
+REPORTS_DIR = PROJECT_DIR / "reports"
 
 RAW_PATH = RAW_DIR / "geih_2025_ocupados_crudo.csv"
 PROCESSED_PATH = PROCESSED_DIR / "geih_2025_ocupados_limpio.csv"
 MODEL_PATH = MODELS_DIR / "modelo_cotiza_pension.joblib"
+# Se versiona en git: el diff de cada PR muestra si el modelo mejora o empeora
+METRICAS_PATH = REPORTS_DIR / "metricas_prueba.json"
 
 # --- Fuente ------------------------------------------------------------------
 ANIO = 2025
