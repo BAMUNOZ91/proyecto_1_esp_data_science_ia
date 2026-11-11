@@ -1,7 +1,7 @@
 # Comandos del proyecto. Corre `make` sin argumentos para ver la ayuda.
 
 .DEFAULT_GOAL := help
-.PHONY: help setup data train test lint format clean
+.PHONY: help setup data train app test lint format clean
 
 help:  ## Lista los comandos disponibles.
 	@echo "Comandos del proyecto cotiza-pension:"
@@ -18,6 +18,9 @@ data:  ## Descarga la GEIH 2025 del DANE y genera data/processed/ (la primera ve
 
 train:  ## Entrena el modelo final, lo evalúa en prueba y guarda models/ y reports/metricas_prueba.json.
 	uv run python -m cotiza_pension.train
+
+app:  ## Abre la app de predicción en el navegador (requiere `make train`).
+	uv run streamlit run app/app.py
 
 test:  ## Corre las pruebas automatizadas.
 	uv run pytest
