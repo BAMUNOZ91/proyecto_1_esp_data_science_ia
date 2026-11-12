@@ -39,7 +39,11 @@ make test    # corre las pruebas
 make app     # abre la app de Streamlit en el navegador
 ```
 
-`make train` necesita los datos de `make data`, y `make app` necesita el modelo de `make train`. Con `make` sin argumentos se ven todos los comandos.
+La primera vez que se corre `make app`, Streamlit pide un correo en la terminal: basta con pulsar Enter sin escribir nada.
+
+Si los datos no existen, `make train` corre `make data` primero, así que `make setup && make train && make test` funciona en una máquina limpia. `make app` necesita el modelo de `make train`.
+
+En una prueba desde un clon limpio, `make setup`, `make data`, `make train` y `make test` tardaron unos 3 minutos en total; la descarga del DANE fue la parte más lenta, y depende de la conexión. Con `make` sin argumentos se ven todos los comandos.
 
 Sin `make`, los mismos pasos son: `uv sync`, `uv run python -m cotiza_pension.data`, `uv run python -m cotiza_pension.train`, `uv run pytest` y `uv run streamlit run app/app.py`.
 

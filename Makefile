@@ -13,10 +13,16 @@ help:  ## Lista los comandos disponibles.
 setup:  ## Crea el entorno .venv e instala las dependencias (incluye las de desarrollo).
 	uv sync
 
+DATOS := data/processed/geih_2025_ocupados_limpio.csv
+
 data:  ## Descarga la GEIH 2025 del DANE y genera data/processed/ (la primera vez tarda).
 	uv run python -m cotiza_pension.data
 
-train:  ## Entrena el modelo final, lo evalúa en prueba y guarda models/ y reports/metricas_prueba.json.
+# Si no existe el dataset limpio, `make train` lo genera primero
+$(DATOS):
+	uv run python -m cotiza_pension.data
+
+train: $(DATOS)  ## Entrena el modelo final (si faltan los datos, los descarga primero).
 	uv run python -m cotiza_pension.train
 
 app:  ## Abre la app de predicción en el navegador (requiere `make train`).
