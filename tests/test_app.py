@@ -34,7 +34,9 @@ def test_opciones_salen_del_modelo(pipeline):
 def test_etiquetas_legibles():
     assert etiqueta("rama_2d", "47.0") == "47 - Comercio al por menor"
     assert etiqueta("rama_2d", "5.0") == "5 - Otra rama (CIIU)"
-    assert etiqueta("estrato", "9.0") == "Estrato 9 (sin significado confirmado)"
+    assert etiqueta("estrato", "2.0") == "Estrato 2"
+    assert etiqueta("estrato", "9.0") == "No sabe o tiene planta eléctrica"
+    assert etiqueta("lugar_trabajo", "7.0") == "Local fijo, oficina o fábrica"
     assert etiqueta("estrato", math.nan) == NO_INFORMA
     assert etiqueta("sexo", "Mujer") == "Mujer"
 

@@ -29,6 +29,22 @@ NOMBRES_RAMA = {
     97: "Hogares con servicio doméstico",
 }
 
+# P6880 y P4030S1A1 según el diccionario oficial de la GEIH 2025 (catálogo 853 del DANE)
+NOMBRES_LUGAR = {
+    1: "En esta vivienda",
+    2: "En otras viviendas",
+    3: "En kiosco o caseta",
+    4: "En un vehículo",
+    5: "De puerta en puerta",
+    6: "Sitio al descubierto en la calle",
+    7: "Local fijo, oficina o fábrica",
+    8: "En el campo o área rural, mar o río",
+    9: "En una obra en construcción",
+    10: "En una mina o cantera",
+    11: "Otro",
+}
+NOMBRES_ESTRATO = {0: "Conexión pirata", 9: "No sabe o tiene planta eléctrica"}
+
 # Textos que ve la persona para cada variable
 ROTULOS = {
     "edad": "Edad (años)",
@@ -43,7 +59,7 @@ ROTULOS = {
     "nivel_educativo": "Nivel educativo más alto alcanzado",
     "posicion_ocupacional": "Posición ocupacional",
     "tamano_empresa": "Personas en la empresa o negocio",
-    "lugar_trabajo": "Lugar de trabajo (código DANE)",
+    "lugar_trabajo": "Lugar donde trabaja principalmente",
     "rama_2d": "Rama de actividad",
     "estrato": "Estrato de la vivienda",
 }
@@ -89,10 +105,9 @@ def etiqueta(columna: str, valor) -> str:
     if columna == "rama_2d" and codigo is not None:
         return f"{codigo} - {NOMBRES_RAMA.get(codigo, 'Otra rama (CIIU)')}"
     if columna == "estrato" and codigo is not None:
-        sufijo = " (sin significado confirmado)" if codigo in (0, 9) else ""
-        return f"Estrato {codigo}{sufijo}"
+        return NOMBRES_ESTRATO.get(codigo, f"Estrato {codigo}")
     if columna == "lugar_trabajo" and codigo is not None:
-        return f"Código {codigo}"
+        return NOMBRES_LUGAR.get(codigo, f"Código {codigo}")
     return str(valor)
 
 

@@ -27,15 +27,14 @@ Los datos no se versionan en git. Se esperan en estas rutas:
 
 ## Licencia y cita
 
-No se encontró una licencia formal para estos microdatos en las páginas consultadas del DANE, ni permiso expreso de redistribución. El DANE invita a citarlo como fuente e indica que no responde por los cálculos de los usuarios.
+Las condiciones de uso salen de los metadatos oficiales de la GEIH 2025 (catálogo 853 del ANDA), que `make data` descarga en `data/raw/geih/metadata/2025.json`:
 
-Cita sugerida por `dane-data`:
-
-> DANE. Gran Encuesta Integrada de Hogares (GEIH) [microdatos]. Archivo Nacional de Datos (ANDA). https://microdatos.dane.gov.co
+- **Acceso:** los microdatos anonimizados de uso público son gratuitos.
+- **Cita obligatoria:** "Fuente: Departamento Administrativo Nacional de Estadística: www.dane.gov.co".
+- **Redistribución prohibida:** no se pueden copiar ni reproducir los datos en medios electrónicos que los dejen disponibles para múltiples usuarios sin permiso escrito del DANE. Por eso los CSV **no se versionan en git**: cada persona los descarga con `make data`.
+- **Confidencialidad:** Ley 79 de 1993, artículo 5. El DANE no responde por el uso e interpretación que hagan terceros (Ley 1032 de 2006).
 
 La licencia MIT de `dane-data` cubre esa librería, no los datos.
-
-**Pendiente:** confirmar las condiciones de uso en la entrada de la GEIH 2025 o con el DANE.
 
 ## Filtros aplicados
 
@@ -89,7 +88,17 @@ La limpieza también elimina `MES` y `OCI`, renombra las columnas, convierte có
 ## Calidad y limitaciones
 
 - **Nulos:** `ingreso` tiene 7.916 (2,25 %), de los cuales 5.660 son familiares sin remuneración. `estrato` tiene 0,43 %.
-- **`tiene_contrato`:** vale 1 para todos los asalariados desde el archivo crudo, así que casi equivale a "es asalariado". Falta confirmar a quién se le hace la pregunta.
-- **Diccionario:** el archivo crudo solo trae códigos. Las descripciones no salen de un diccionario incluido en el proyecto, y algunos códigos se dedujeron de los datos. El detalle está en las secciones 3 y 9 del EDA.
+- **`tiene_contrato`:** la pregunta oficial es "¿tiene algún tipo de contrato? (verbal o escrito)" y se le hace a todos los ocupados. Como cuenta el contrato verbal, vale 1 para todos los asalariados, así que casi equivale a "es asalariado".
+- **Diccionario:** los códigos se verificaron con el [diccionario oficial de la GEIH 2025](https://microdatos.dane.gov.co/index.php/catalog/853/data-dictionary) y con los CSV originales del DANE:
+
+| Variable | Resultado |
+|---|---|
+| `zona`, `estado_civil`, `nivel_educativo`, `cotiza_pension`, `tiene_contrato` | Coinciden con el diccionario |
+| `sexo` | Sin confirmar: el diccionario no muestra las categorías de P3271. Se usa 1 = hombre y 2 = mujer |
+| `tamano_empresa` | Coincide: 9 = 101 a 200 personas y 10 = 201 o más |
+| `estrato` | Coincide: 0 = conexión pirata, 9 = no sabe o tiene planta eléctrica |
+| `lugar_trabajo` | Coincide: códigos 1 a 11 (la app muestra los nombres oficiales) |
+| `posicion_ocupacional` | **No coincide del todo.** El diccionario tiene 9 códigos (7 = sin remuneración en otros hogares, 8 = jornalero, 9 = otro), pero los CSV solo traen 1 a 8. El código 7 tiene ingreso y, como los asalariados, siempre tiene contrato, así que se trata como jornalero, y el 8 como otro |
+| `parentesco_jefe` | **No coincide.** El diccionario tiene 9 códigos y los CSV traen 13. Solo se usan jefe, pareja e hijo(a); el resto se agrupa como "Otro" |
 - **Muestra y población:** los porcentajes sin ponderar describen la muestra. Para estimar la población se usa `factor_expansion`.
 - **`horas_semana`:** la mediana baja de 46 a 44 horas desde agosto de 2025, lo que coincide con la reducción de la jornada legal.

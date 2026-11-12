@@ -85,7 +85,7 @@ Las cifras completas están en [reports/metricas_prueba.json](reports/metricas_p
 - **Le cuesta el grupo que más interesa.** Entre quienes ganan 1 SMMLV o más, el AUC baja a 0,964 y el modelo detecta al 82,5 % de los no cotizantes. Entre los asalariados de empresa particular de ese grupo, solo detecta al 66,7 %, porque su perfil se parece mucho al de quienes sí cotizan.
 - **Describe la muestra, no la población.** El modelo se entrena sin el factor de expansión de la encuesta.
 - **Es una encuesta.** La respuesta de cotizar es declarada por la persona, no un registro administrativo.
-- **Diccionario de datos:** algunos códigos del DANE se dedujeron de los datos y faltan por confirmar con el diccionario oficial (ver [dataset-card.md](dataset-card.md)).
+- **Diccionario de datos:** los códigos se verificaron con el diccionario oficial del DANE. En posición ocupacional y parentesco, el diccionario no coincide con los códigos que traen los datos, así que esas dos variables se interpretaron con los datos (ver [dataset-card.md](dataset-card.md)).
 - **Cambios en 2026:** la reducción de la jornada laboral (Ley 2101) puede cambiar el significado de `horas_semana`.
 - **`tiene_contrato` no se usa.** En los datos vale 1 para todos los asalariados, así que repite la posición ocupacional y no mejoró ningún modelo.
 
