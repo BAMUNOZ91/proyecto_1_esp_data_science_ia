@@ -112,4 +112,6 @@ Las cifras completas están en [reports/metricas_prueba.json](reports/metricas_p
 
 ## Autores
 
-Brayan Andrés Muñoz ([BAMUNOZ91](https://github.com/BAMUNOZ91)), Julián Andrés Urrea ([julianurreae](https://github.com/julianurreae)) y [diemiranda04](https://github.com/diemiranda04).
+- Brayan Andrés Muñoz ([BAMUNOZ91](https://github.com/BAMUNOZ91))
+- Julián Andrés Urrea ([julianurreae](https://github.com/julianurreae))
+- Diego Alejandro Miranda ([diemiranda04](https://github.com/diemiranda04))
