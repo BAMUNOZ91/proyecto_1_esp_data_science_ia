@@ -85,6 +85,9 @@ CODIGOS = {
         13: "Doctorado",
         99: "No sabe",
     },
+    # El diccionario oficial (catálogo 853) tiene 9 códigos: 7 = sin remuneración en otros
+    # hogares, 8 = jornalero y 9 = otro. Los CSV del DANE solo traen 1 a 8, y el 7 se comporta
+    # como jornalero (tiene ingreso y, como los asalariados, siempre tiene contrato). Se deja así.
     "posicion_ocupacional": {
         1: "Empleado empresa particular",
         2: "Empleado del gobierno",
@@ -107,6 +110,8 @@ CODIGOS = {
         9: "101 a 200",
         10: "201 o más",
     },
+    # El diccionario oficial tiene 9 códigos, pero los CSV del DANE traen 13: del 4 en adelante
+    # no coinciden, por eso se agrupan como "Otro" (ver data.limpiar)
     "parentesco_jefe": {1: "Jefe(a) del hogar", 2: "Pareja del jefe(a)", 3: "Hijo(a)"},
     "tiene_contrato": {1: 1, 2: 0},
     "departamento": {
