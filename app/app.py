@@ -12,6 +12,7 @@ from cotiza_pension.formulario import (
     armar_datos,
     etiqueta,
     opciones_categoricas,
+    texto_ingreso,
 )
 from cotiza_pension.predict import obtener_pipeline, predecir
 
@@ -44,7 +45,8 @@ def elegir(columna: str, contenedor, por_defecto=None):
     )
 
 
-with st.form("perfil"):
+# Sin st.form: cada cambio en un campo vuelve a calcular la probabilidad al instante.
+with st.container(border=True):
     st.subheader("Persona")
     c1, c2 = st.columns(2)
     edad = c1.number_input(ROTULOS["edad"], min_value=10, max_value=110, value=35, step=1)
@@ -75,18 +77,29 @@ with st.form("perfil"):
     st.subheader("Ingreso")
     no_reporta = st.checkbox("No reporta ingreso")
     ingreso = st.number_input(
-        ROTULOS["ingreso_smmlv"], min_value=0, value=1_423_500, step=50_000, format="%d"
+        ROTULOS["ingreso_smmlv"],
+        min_value=0,
+        value=1_423_500,
+        step=100_000,
+        format="%d",
+        disabled=no_reporta,
+        help="Usa - y + para bajar o subir de 100.000 en 100.000, o escribe el valor.",
     )
-    enviado = st.form_submit_button("Calcular probabilidad")
+    # "\$" evita que Streamlit lea el signo de pesos como una fórmula matemática
+    texto = texto_ingreso(ingreso).replace("$", "\\$")
+    st.markdown("Ingreso no reportado" if no_reporta else f"**{texto}**")
 
-if enviado:
-    datos = armar_datos(
-        {"edad": edad, "horas_semana": float(horas), "meses_en_empresa": float(meses)},
-        categoricas,
-        None if no_reporta else float(ingreso),
-    )
-    resultado = predecir(datos)
-    probabilidad = resultado["probabilidad_cotizar"]
+datos = armar_datos(
+    {"edad": edad, "horas_semana": float(horas), "meses_en_empresa": float(meses)},
+    categoricas,
+    None if no_reporta else float(ingreso),
+)
+resultado = predecir(datos)
+probabilidad = resultado["probabilidad_cotizar"]
+
+# El resultado va en la barra lateral para verlo siempre mientras se cambian los campos
+with st.sidebar:
+    st.header("Resultado")
     st.metric("Probabilidad de cotizar", f"{probabilidad:.0%}")
     st.progress(probabilidad)
     if resultado["cotiza"]:
@@ -94,6 +107,7 @@ if enviado:
     else:
         st.warning("El modelo predice que esta persona **no cotiza** a pensión.")
     st.caption(
-        "Es una estimación con datos de una encuesta, no un dato real de la persona. "
-        "El modelo acierta menos con asalariados de microempresas que ganan 1 SMMLV o más."
+        "Se actualiza cada vez que cambias un campo. Es una estimación con datos de una "
+        "encuesta, no un dato real de la persona. El modelo acierta menos con asalariados de "
+        "microempresas que ganan 1 SMMLV o más."
     )

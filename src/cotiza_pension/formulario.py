@@ -192,6 +192,13 @@ def etiqueta(columna: str, valor) -> str:
     return str(valor)
 
 
+def texto_ingreso(pesos: float) -> str:
+    """Ingreso con punto de miles y en salarios mínimos, p. ej. "$1.423.500 (1,00 SMMLV)"."""
+    en_pesos = f"{pesos:,.0f}".replace(",", ".")
+    en_smmlv = f"{pesos / SMMLV:.2f}".replace(".", ",")
+    return f"${en_pesos} ({en_smmlv} SMMLV)"
+
+
 def armar_datos(numericas: dict, categoricas: dict, ingreso_pesos: float | None) -> dict:
     """Junta lo que llenó la persona en el formato que espera `predict.predecir`.
 
