@@ -14,6 +14,7 @@ from cotiza_pension.formulario import (
     armar_datos,
     etiqueta,
     opciones_categoricas,
+    texto_ingreso,
 )
 from cotiza_pension.model import construir_pipeline_final
 
@@ -75,10 +76,34 @@ def test_la_app_calcula_una_probabilidad(pipeline, monkeypatch):
     monkeypatch.setattr(predict, "_pipeline", pipeline)
     app = AppTest.from_file(APP, default_timeout=60).run()
     assert not app.exception
-    app.button[0].click().run()
+    assert app.sidebar.metric[0].label == "Probabilidad de cotizar"
+    assert app.sidebar.metric[0].value.endswith("%")
+
+
+def test_la_probabilidad_cambia_al_cambiar_un_campo(pipeline, monkeypatch):
+    monkeypatch.setattr(predict, "_pipeline", pipeline)
+    app = AppTest.from_file(APP, default_timeout=60).run()
+    ingreso = next(n for n in app.number_input if n.label.startswith("Ingreso"))
+    ingreso.set_value(0).run()  # sin clic en ningún botón
+    bajo = app.sidebar.metric[0].value
+    ingreso.set_value(20_000_000).run()
     assert not app.exception
-    assert app.metric[0].label == "Probabilidad de cotizar"
-    assert app.metric[0].value.endswith("%")
+    assert app.sidebar.metric[0].value != bajo
+
+
+def test_texto_ingreso_con_punto_de_miles():
+    assert texto_ingreso(1_423_500) == "$1.423.500 (1,00 SMMLV)"
+    assert texto_ingreso(4_000_000) == "$4.000.000 (2,81 SMMLV)"
+
+
+def test_el_ingreso_sube_de_100_mil_y_se_muestra_con_puntos(pipeline, monkeypatch):
+    monkeypatch.setattr(predict, "_pipeline", pipeline)
+    app = AppTest.from_file(APP, default_timeout=60).run()
+    ingreso = next(n for n in app.number_input if n.label.startswith("Ingreso"))
+    assert ingreso.step == 100_000
+    ingreso.increment().run()
+    assert not app.exception
+    assert any("1.523.500" in m.value for m in app.markdown)
 
 
 def test_la_app_avisa_si_no_hay_modelo(tmp_path, monkeypatch):
