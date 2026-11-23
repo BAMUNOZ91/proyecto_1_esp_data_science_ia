@@ -170,6 +170,10 @@ def opciones_categoricas(pipeline) -> dict[str, list]:
             valores.sort(key=lambda v: math.inf if es_nulo(v) else _codigo(v))
         else:
             valores.sort(key=lambda v: (es_nulo(v), str(v)))
+        if columna == "rama_2d":
+            # Se ocultan los códigos que no existen en la CIIU (en los datos, solo el 0, con 6
+            # personas). El modelo los sigue conociendo; solo no se ofrecen en el formulario.
+            valores = [v for v in valores if _codigo(v) in NOMBRES_RAMA]
         opciones[columna] = valores
     return opciones
 

@@ -32,6 +32,14 @@ def test_opciones_salen_del_modelo(pipeline):
     assert {"1.0", "2.0", "3.0"} <= set(opciones["estrato"])
 
 
+def test_ramas_sin_nombre_en_la_ciiu_no_se_ofrecen(generador_sinteticos):
+    X, y = generador_sinteticos(300)
+    X["rama_2d"] = X["rama_2d"].where(X.index % 10 != 0, 0.0)  # algunos con código 0
+    pipeline = construir_pipeline_final().fit(X.drop(columns="tiene_contrato"), y)
+    assert "0.0" not in opciones_categoricas(pipeline)["rama_2d"]
+    assert "47.0" in opciones_categoricas(pipeline)["rama_2d"]
+
+
 def test_etiquetas_legibles():
     assert etiqueta("rama_2d", "47.0") == "47 - Comercio al por menor"
     assert etiqueta("rama_2d", "5.0") == "5 - Extracción de carbón de piedra y lignito"
