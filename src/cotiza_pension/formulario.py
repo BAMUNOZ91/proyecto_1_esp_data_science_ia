@@ -9,139 +9,101 @@ import math
 
 from .config import CODIGOS, FEATURES_CAT, FEATURES_NUM, SMMLV
 
-# Nombres oficiales de las divisiones (2 dígitos) de la CIIU Rev. 4 A.C. (2022), DANE:
+# Divisiones (2 dígitos) de la CIIU Rev. 4 A.C. (2022), DANE:
 # https://www.dane.gov.co/files/sen/nomenclatura/ciiu/Estructura-detallada-CIIU-4AC-2022.xlsx
 # Se usa esta fuente porque RAMA2D_R4 no trae categorías en el diccionario de la GEIH 2025
-# (catálogo 853 del DANE).
+# (catálogo 853 del DANE). Para que se lean bien en la app, los nombres oficiales de más de
+# 45 caracteres se abrevian: se deja la actividad principal y se quitan los paréntesis y las
+# excepciones. Los demás son el nombre oficial exacto.
 NOMBRES_RAMA = {
-    1: "Agricultura, ganadería, caza y actividades de servicios conexas",
+    1: "Agricultura, ganadería y caza",
     2: "Silvicultura y extracción de madera",
     3: "Pesca y acuicultura",
     5: "Extracción de carbón de piedra y lignito",
     6: "Extracción de petróleo crudo y gas natural",
     7: "Extracción de minerales metalíferos",
     8: "Extracción de otras minas y canteras",
-    9: "Actividades de servicios de apoyo para la explotación de minas y canteras",
+    9: "Servicios de apoyo a la minería",
     10: "Elaboración de productos alimenticios",
     11: "Elaboración de bebidas",
     12: "Elaboración de productos de tabaco",
     13: "Fabricación de productos textiles",
     14: "Confección de prendas de vestir",
-    15: (
-        "Curtido y recurtido de cueros; fabricación de calzado; fabricación de artículos de viaje, "
-        "maletas, bolsos de mano y artículos similares, y fabricación de artículos de talabartería "
-        "y guarnicionería; adobo y teñido de pieles"
-    ),
-    16: (
-        "Transformación de la madera y fabricación de productos de madera y de corcho, excepto "
-        "muebles; fabricación de artículos de cestería y espartería"
-    ),
-    17: "Fabricación de papel, cartón y productos de papel y cartón",
-    18: "Actividades de impresión y de producción de copias a partir de grabaciones originales",
-    19: (
-        "Coquización, fabricación de productos de la refinación del petróleo y actividad de mezcla "
-        "de combustibles"
-    ),
-    20: "Fabricación de sustancias y productos químicos",
-    21: (
-        "Fabricación de productos farmacéuticos, sustancias químicas medicinales y productos "
-        "botánicos de uso farmacéutico"
-    ),
-    22: "Fabricación de productos de caucho y de plástico",
-    23: "Fabricación de otros productos minerales no metálicos",
+    15: "Cuero, calzado y artículos de viaje",
+    16: "Productos de madera, corcho y cestería",
+    17: "Fabricación de papel y cartón",
+    18: "Impresión y copia de grabaciones",
+    19: "Refinación de petróleo y coquización",
+    20: "Fabricación de productos químicos",
+    21: "Fabricación de productos farmacéuticos",
+    22: "Fabricación de productos de caucho y plástico",
+    23: "Fabricación de minerales no metálicos",
     24: "Fabricación de productos metalúrgicos básicos",
-    25: "Fabricación de productos elaborados de metal, excepto maquinaria y equipo",
-    26: "Fabricación de productos informáticos, electrónicos y ópticos",
+    25: "Fabricación de productos de metal",
+    26: "Fabricación de productos electrónicos",
     27: "Fabricación de aparatos y equipo eléctrico",
     28: "Fabricación de maquinaria y equipo n.c.p.",
-    29: "Fabricación de vehículos automotores, remolques y semirremolques",
-    30: "Fabricación de otros tipos de equipo de transporte",
+    29: "Fabricación de vehículos automotores",
+    30: "Fabricación de otro equipo de transporte",
     31: "Fabricación de muebles, colchones y somieres",
     32: "Otras industrias manufactureras",
-    33: "Instalación, mantenimiento y reparación especializado de maquinaria y equipo",
-    35: "Suministro de electricidad, gas, vapor y aire acondicionado",
+    33: "Instalación y reparación de maquinaria",
+    35: "Suministro de electricidad, gas y vapor",
     36: "Captación, tratamiento y distribución de agua",
     37: "Evacuación y tratamiento de aguas residuales",
-    38: "Recolección, tratamiento y disposición de desechos, recuperación de materiales",
-    39: "Actividades de saneamiento ambiental y otros servicios de gestión de desechos",
+    38: "Recolección y tratamiento de desechos",
+    39: "Saneamiento ambiental",
     41: "Construcción de edificios",
     42: "Obras de ingeniería civil",
-    43: "Actividades especializadas para la construcción de edificios y obras de ingeniería civil",
-    45: (
-        "Comercio, mantenimiento y reparación de vehículos automotores y motocicletas, sus partes, "
-        "piezas y accesorios"
-    ),
-    46: (
-        "Comercio al por mayor y en comisión o por contrata, excepto el comercio de vehículos "
-        "automotores y motocicletas"
-    ),
-    47: (
-        "Comercio al por menor (incluso el comercio al por menor de combustibles), excepto el de "
-        "vehículos automotores y motocicletas"
-    ),
+    43: "Actividades especializadas de construcción",
+    45: "Comercio y reparación de vehículos",
+    46: "Comercio al por mayor",
+    47: "Comercio al por menor",
     49: "Transporte terrestre; transporte por tuberías",
     50: "Transporte acuático",
     51: "Transporte aéreo",
-    52: "Almacenamiento y actividades complementarias al transporte",
+    52: "Almacenamiento y apoyo al transporte",
     53: "Correo y servicios de mensajería",
     55: "Alojamiento",
     56: "Actividades de servicios de comidas y bebidas",
     58: "Actividades de edición",
-    59: (
-        "Actividades cinematográficas, de video y producción de programas de televisión, grabación "
-        "de sonido y edición de música"
-    ),
-    60: "Actividades de programación, transmisión y/o difusión",
+    59: "Cine, televisión, sonido y música",
+    60: "Programación, transmisión y difusión",
     61: "Telecomunicaciones",
-    62: (
-        "Desarrollo de sistemas informáticos (planificación, análisis, diseño, programación, "
-        "pruebas), consultoría informática y actividades relacionadas"
-    ),
+    62: "Desarrollo de software e informática",
     63: "Actividades de servicios de información",
-    64: "Actividades de servicios financieros, excepto las de seguros y de pensiones",
-    65: (
-        "Seguros (incluso el reaseguro), seguros sociales y fondos de pensiones, excepto la "
-        "seguridad social"
-    ),
-    66: "Actividades auxiliares de las actividades de servicios financieros",
+    64: "Servicios financieros, excepto seguros",
+    65: "Seguros y fondos de pensiones",
+    66: "Actividades auxiliares financieras",
     68: "Actividades inmobiliarias",
     69: "Actividades jurídicas y de contabilidad",
-    70: "Actividades de administración empresarial; actividades de consultoría de gestión",
-    71: "Actividades de arquitectura e ingeniería; ensayos y análisis técnicos",
+    70: "Administración empresarial y consultoría",
+    71: "Arquitectura, ingeniería y ensayos técnicos",
     72: "Investigación científica y desarrollo",
     73: "Publicidad y estudios de mercado",
-    74: "Otras actividades profesionales, científicas y técnicas",
+    74: "Otras actividades profesionales y técnicas",
     75: "Actividades veterinarias",
     77: "Actividades de alquiler y arrendamiento",
     78: "Actividades de empleo",
-    79: (
-        "Actividades de las agencias de viajes, operadores turísticos, servicios de reserva y "
-        "actividades relacionadas"
-    ),
-    80: "Actividades de seguridad e investigación privada",
-    81: "Actividades de servicios a edificios y paisajismo (jardines, zonas verdes)",
-    82: (
-        "Actividades administrativas y de apoyo de oficina y otras actividades de apoyo a las "
-        "empresas"
-    ),
-    84: "Administración pública y defensa; planes de seguridad social de afiliación obligatoria",
+    79: "Agencias de viajes y operadores turísticos",
+    80: "Seguridad e investigación privada",
+    81: "Servicios a edificios y paisajismo",
+    82: "Apoyo administrativo a las empresas",
+    84: "Administración pública y defensa",
     85: "Educación",
     86: "Actividades de atención de la salud humana",
-    87: "Actividades de atención residencial medicalizada",
-    88: "Actividades de asistencia social sin alojamiento",
-    90: "Actividades creativas, artísticas y de entretenimiento",
-    91: "Actividades de bibliotecas, archivos, museos y otras actividades culturales",
+    87: "Atención residencial medicalizada",
+    88: "Asistencia social sin alojamiento",
+    90: "Actividades artísticas y de entretenimiento",
+    91: "Bibliotecas, archivos y museos",
     92: "Actividades de juegos de azar y apuestas",
-    93: "Actividades deportivas y actividades recreativas y de esparcimiento",
+    93: "Actividades deportivas y recreativas",
     94: "Actividades de asociaciones",
-    95: "Mantenimiento y reparación de computadores, efectos personales y enseres domésticos",
+    95: "Reparación de computadores y enseres",
     96: "Otras actividades de servicios personales",
-    97: "Actividades de los hogares individuales como empleadores de personal doméstico",
-    98: (
-        "Actividades no diferenciadas de los hogares individuales como productores de bienes y "
-        "servicios para uso propio"
-    ),
-    99: "Actividades de organizaciones y entidades extraterritoriales",
+    97: "Hogares empleadores de servicio doméstico",
+    98: "Hogares productores para uso propio",
+    99: "Organizaciones extraterritoriales",
 }
 
 # P6880 y P4030S1A1 según el diccionario oficial de la GEIH 2025 (catálogo 853 del DANE)

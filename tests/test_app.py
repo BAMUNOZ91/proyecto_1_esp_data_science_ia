@@ -10,6 +10,7 @@ from cotiza_pension import predict
 from cotiza_pension.config import FEATURES_CAT, SMMLV
 from cotiza_pension.formulario import (
     NO_INFORMA,
+    NOMBRES_RAMA,
     armar_datos,
     etiqueta,
     opciones_categoricas,
@@ -32,10 +33,7 @@ def test_opciones_salen_del_modelo(pipeline):
 
 
 def test_etiquetas_legibles():
-    assert etiqueta("rama_2d", "47.0") == (
-        "47 - Comercio al por menor (incluso el comercio al por menor de combustibles), "
-        "excepto el de vehículos automotores y motocicletas"
-    )
+    assert etiqueta("rama_2d", "47.0") == "47 - Comercio al por menor"
     assert etiqueta("rama_2d", "5.0") == "5 - Extracción de carbón de piedra y lignito"
     assert etiqueta("rama_2d", "4.0") == "4 - Código sin nombre en la CIIU"
     assert etiqueta("estrato", "2.0") == "Estrato 2"
@@ -43,6 +41,11 @@ def test_etiquetas_legibles():
     assert etiqueta("lugar_trabajo", "7.0") == "Local fijo, oficina o fábrica"
     assert etiqueta("estrato", math.nan) == NO_INFORMA
     assert etiqueta("sexo", "Mujer") == "Mujer"
+
+
+def test_nombres_de_rama_completos_y_cortos():
+    assert len(NOMBRES_RAMA) == 88
+    assert max(len(nombre) for nombre in NOMBRES_RAMA.values()) <= 45
 
 
 def test_armar_datos_pasa_el_ingreso_a_salarios_minimos():
